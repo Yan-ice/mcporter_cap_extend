@@ -1,6 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createPrefixedConsoleLogger } from './logging.js';
+import { resolveBaseDir } from './daemon/paths.js';
+import { expandHome } from './env.js';
 
 const logger = createPrefixedConsoleLogger('capability-loader', 'warn');
 
@@ -10,11 +12,6 @@ const logger = createPrefixedConsoleLogger('capability-loader', 'warn');
  */
 const MCPORTER_CAPABILITIES_DIR = 'MCPORTER_CAPABILITIES_DIR';
 
-/**
- * Default capabilities directory if environment variable is not set.
- */
-const MCPORTER_CAPABILITIES_DIR_DEFAULT = './capabilities';
-
 
 /**
  * Cache for loaded capabilities to avoid repeated disk reads.
@@ -23,13 +20,15 @@ const capabilityCache = new Map<string, unknown>();
 
 /**
  * Get the capabilities directory from environment or use default.
+ * Defaults to <base_dir>/capabilities where base_dir is ~/.mcporter
+ * (or MCPORTER_DAEMON_DIR if set).
  */
 function getCapabilitiesDir(): string {
   const dir = process.env[MCPORTER_CAPABILITIES_DIR];
   if (dir) {
-    return dir;
+    return expandHome(dir.trim());
   }
-  return MCPORTER_CAPABILITIES_DIR_DEFAULT;
+  return join(resolveBaseDir(), 'capabilities');
 }
 
 /**

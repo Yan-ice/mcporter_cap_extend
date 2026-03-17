@@ -4,6 +4,7 @@ import type { CallToolRequest, ListResourcesRequest } from '@modelcontextprotoco
 import { loadServerDefinitions, type ServerDefinition } from './config.js';
 import { createPrefixedConsoleLogger, type Logger, type LogLevel, resolveLogLevelFromEnv } from './logging.js';
 import { closeTransportAndWait } from './runtime-process-utils.js';
+import { read_capability } from './capability_loader.js';
 import './sdk-patches.js';
 import { shouldResetConnection } from './runtime/errors.js';
 import { resolveOAuthTimeoutFromEnv } from './runtime/oauth.js';
@@ -70,6 +71,7 @@ export interface ServerToolInfo {
   readonly description?: string;
   readonly inputSchema?: unknown;
   readonly outputSchema?: unknown;
+  readonly capabilityRequired?: string;
 }
 
 // createRuntime spins up a pooled MCP runtime from config JSON or provided definitions.
@@ -106,6 +108,7 @@ export async function callOnce(params: {
 class McpRuntime implements Runtime {
   private readonly definitions: Map<string, ServerDefinition>;
   private readonly clients = new Map<string, Promise<ClientContext>>();
+  private readonly toolCache = new Map<string, ServerToolInfo[]>();
   private readonly logger: RuntimeLogger;
   private readonly clientInfo: { name: string; version: string };
   private readonly oauthTimeoutMs?: number;
@@ -149,6 +152,15 @@ class McpRuntime implements Runtime {
 
   // listTools queries tool metadata and optionally includes schemas when requested.
   async listTools(server: string, options: ListToolsOptions = {}): Promise<ServerToolInfo[]> {
+    const normalizedServer = server.trim();
+    // Check cache first if no options that would require fresh fetch
+    if (options.autoAuthorize !== false && options.allowCachedAuth !== false && !options.includeSchema) {
+      const cached = this.toolCache.get(normalizedServer);
+      if (cached) {
+        return cached;
+      }
+    }
+
     // Toggle auto authorization so list can run without forcing OAuth flows.
     const autoAuthorize = options.autoAuthorize !== false;
     const context = await this.connect(server, {
@@ -167,11 +179,17 @@ class McpRuntime implements Runtime {
             description: tool.description ?? undefined,
             inputSchema: options.includeSchema ? tool.inputSchema : undefined,
             outputSchema: options.includeSchema ? tool.outputSchema : undefined,
+            capabilityRequired:
+              tool.annotations && 'capability_required' in tool.annotations
+                ? (tool.annotations.capability_required as string)
+                : undefined,
           }))
         );
         cursor = response.nextCursor ?? undefined;
       } while (cursor);
 
+      // Cache the result for future use
+      this.toolCache.set(normalizedServer, tools);
       return tools;
     } catch (error) {
       // Keep-alive STDIO transports often die when Chrome closes; drop the cached client
@@ -191,9 +209,27 @@ class McpRuntime implements Runtime {
   async callTool(server: string, toolName: string, options: CallOptions = {}): Promise<unknown> {
     try {
       const { client } = await this.connect(server);
+      const args = options.args ?? {};
+
+      // Look up tool info to check if capability is required
+      const normalizedServer = server.trim();
+      let tools = this.toolCache.get(normalizedServer);
+      if (!tools) {
+        tools = await this.listTools(server);
+      }
+      const toolInfo = tools.find(t => t.name === toolName);
+
+      if (toolInfo?.capabilityRequired !== undefined) {
+        const capability = read_capability(toolInfo.capabilityRequired);
+        // Inject to args if capability was found successfully
+        if (capability !== undefined) {
+          args.capability = capability;
+        }
+      }
+
       const params: CallToolRequest['params'] = {
         name: toolName,
-        arguments: options.args ?? {},
+        arguments: args,
       };
       // Forward the requested timeout to the MCP client so server-side requests don't hit the SDK's
       // default 60s cap. Keep our own outer race as a second guard.
@@ -273,12 +309,14 @@ class McpRuntime implements Runtime {
       const normalized = server.trim();
       const context = await this.clients.get(normalized);
       if (!context) {
+        this.toolCache.delete(normalized);
         return;
       }
       await context.client.close().catch(() => {});
       await closeTransportAndWait(this.logger, context.transport).catch(() => {});
       await context.oauthSession?.close().catch(() => {});
       this.clients.delete(normalized);
+      this.toolCache.delete(normalized);
       return;
     }
 
@@ -290,8 +328,10 @@ class McpRuntime implements Runtime {
         await context.oauthSession?.close().catch(() => {});
       } finally {
         this.clients.delete(name);
+        this.toolCache.delete(name);
       }
     }
+    this.toolCache.clear();
   }
 
   private async resetConnectionOnError(server: string, error: unknown): Promise<void> {

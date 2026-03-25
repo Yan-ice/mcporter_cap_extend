@@ -4,7 +4,7 @@ import type { CallToolRequest, ListResourcesRequest } from '@modelcontextprotoco
 import { loadServerDefinitions, type ServerDefinition } from './config.js';
 import { createPrefixedConsoleLogger, type Logger, type LogLevel, resolveLogLevelFromEnv } from './logging.js';
 import { closeTransportAndWait } from './runtime-process-utils.js';
-import { read_capability } from './capability_loader.js';
+import { read_capability, generateCapabilityRequest } from './capability_loader.js';
 import './sdk-patches.js';
 import { shouldResetConnection } from './runtime/errors.js';
 import { resolveOAuthTimeoutFromEnv } from './runtime/oauth.js';
@@ -220,10 +220,12 @@ class McpRuntime implements Runtime {
       const toolInfo = tools.find(t => t.name === toolName);
 
       if (toolInfo?.capabilityRequired !== undefined) {
-        const capability = read_capability(toolInfo.capabilityRequired);
-        // Inject to args if capability was found successfully
-        if (capability !== undefined) {
-          args.capability = capability;
+        // Use server/toolName as the parameter text to sign
+        const paramText = `${normalizedServer}/${toolName}`;
+        const capabilityRequest = generateCapabilityRequest(toolInfo.capabilityRequired, paramText);
+        // Inject the generated request to args if successful
+        if (capabilityRequest !== undefined) {
+          args.capability = capabilityRequest;
         }
       }
 

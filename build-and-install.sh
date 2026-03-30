@@ -26,14 +26,20 @@ else
     exit 1
 fi
 
-echo "✅ Using bun: $($BUN_CMD --version)"
+echo "Using bun: $($BUN_CMD --version)"
 echo
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
+echo "Checking environment..."
+$BUN_CMD install
+
 # Build
-echo "🔨 Building with bun..."
+echo "Building with bun..."
+$BUN_CMD build "$MCPORTER_SRC" --compile --minify --outfile "$OUTPUT_FILE"
+
+
 $BUN_CMD build "$MCPORTER_SRC" --compile --minify --outfile "$OUTPUT_FILE"
 
 # Make executable
@@ -43,7 +49,7 @@ chmod +x "$OUTPUT_FILE"
 SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
 
 echo
-echo "✅ Build completed!"
+echo "Build completed!"
 echo "   Binary: $OUTPUT_FILE"
 echo "   Size: $SIZE"
 echo
@@ -51,25 +57,25 @@ echo
 # Install to system executable directory
 INSTALL_PATH="/usr/local/bin/mcporter-cap"
 echo
-echo "🚀 Installing to $INSTALL_PATH..."
+echo "Installing to $INSTALL_PATH..."
 
 if [ -w "/usr/local/bin" ]; then
     # Current user has write permission
     cp "$OUTPUT_FILE" "$INSTALL_PATH"
-    echo "✅ Installed successfully to $INSTALL_PATH"
+    echo "Installed successfully to $INSTALL_PATH"
 elif command -v sudo &> /dev/null; then
     # Need sudo
     echo "Requesting sudo permission to install..."
     sudo cp "$OUTPUT_FILE" "$INSTALL_PATH"
     if [ $? -eq 0 ]; then
-        echo "✅ Installed successfully to $INSTALL_PATH"
+        echo "Installed successfully to $INSTALL_PATH"
     else
-        echo "❌ Installation failed"
+        echo "Installation failed"
         exit 1
     fi
 else
     # Cannot install
-    echo "⚠️  Cannot install: /usr/local/bin is not writable and sudo is not available"
+    echo "Cannot install: /usr/local/bin is not writable and sudo is not available"
     echo "   You can manually install by running:"
     echo "   sudo cp $OUTPUT_FILE $INSTALL_PATH"
 fi

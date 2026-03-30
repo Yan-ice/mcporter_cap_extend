@@ -58,7 +58,7 @@ export async function handleDaemonCli(args: string[], options: DaemonCliOptions)
 }
 
 function printDaemonHelp(): void {
-  console.log(`Usage: mcporter daemon <start|status|stop|restart>
+  console.log(`Usage: mcporter-cap daemon <start|status|stop|restart>
 
 Commands:
   start    Start the keep-alive daemon (auto-detects keep-alive servers).

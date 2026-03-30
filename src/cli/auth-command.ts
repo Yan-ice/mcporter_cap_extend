@@ -42,7 +42,7 @@ export async function handleAuth(runtime: Runtime, args: string[]): Promise<void
   target = prepared.target;
 
   if (!target) {
-    throw new Error('Usage: mcporter auth <server | url> [--http-url <url> | --stdio <command>]');
+    throw new Error('Usage: mcporter-cap auth <server | url> [--http-url <url> | --stdio <command>]');
   }
 
   const definition = runtime.getDefinition(target);
@@ -113,7 +113,7 @@ function shouldRetryAuthError(error: unknown): boolean {
 
 export function printAuthHelp(): void {
   const lines = [
-    'Usage: mcporter auth <server | url> [flags]',
+    'Usage: mcporter-cap auth <server | url> [flags]',
     '',
     'Purpose:',
     '  Run the authentication flow for a server without listing tools.',
@@ -135,10 +135,10 @@ export function printAuthHelp(): void {
     '  --yes                   Skip confirmation prompts when persisting.',
     '',
     'Examples:',
-    '  mcporter auth linear',
-    '  mcporter auth https://mcp.example.com/mcp',
-    '  mcporter auth --stdio "npx -y chrome-devtools-mcp@latest"',
-    '  mcporter auth --http-url http://localhost:3000/mcp --allow-http',
+    '  mcporter-cap auth linear',
+    '  mcporter-cap auth https://mcp.example.com/mcp',
+    '  mcporter-cap auth --stdio "npx -y chrome-devtools-mcp@latest"',
+    '  mcporter-cap auth --http-url http://localhost:3000/mcp --allow-http',
   ];
   console.error(lines.join('\n'));
 }

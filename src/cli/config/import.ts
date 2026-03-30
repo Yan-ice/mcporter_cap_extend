@@ -17,7 +17,7 @@ export interface ImportFlags {
 export async function handleImportCommand(options: ConfigCliOptions, args: string[]): Promise<void> {
   const kind = args.shift();
   if (!kind) {
-    throw new CliUsageError('Usage: mcporter config import <kind>');
+    throw new CliUsageError('Usage: mcporter-cap config import <kind>');
   }
   const flags = extractImportFlags(args);
   const rootDir = options.loadOptions.rootDir ?? process.cwd();

@@ -198,15 +198,15 @@ export function buildAuthCommandHint(
   if (definition.source?.kind === 'local' && definition.source.path === '<adhoc>') {
     if (definition.command.kind === 'http') {
       const url = definition.command.url instanceof URL ? definition.command.url.href : String(definition.command.url);
-      return `mcporter auth ${url}`;
+      return `mcporter-cap auth ${url}`;
     }
     if (definition.command.kind === 'stdio') {
       const parts = [definition.command.command, ...(definition.command.args ?? [])];
       const rendered = parts.map(quoteCommandSegment).join(' ').trim();
-      return rendered.length > 0 ? `mcporter auth --stdio ${rendered}` : 'mcporter auth --stdio';
+      return rendered.length > 0 ? `mcporter-cap auth --stdio ${rendered}` : 'mcporter auth --stdio';
     }
   }
-  return `mcporter auth ${definition.name}`;
+  return `mcporter-cap auth ${definition.name}`;
 }
 
 function indent(text: string, pad: string): string {

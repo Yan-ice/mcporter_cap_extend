@@ -78,7 +78,7 @@ class PersistentOAuthClientProvider implements OAuthClientProvider {
     this.logger = logger;
     this.persistence = persistence;
     this.metadata = {
-      client_name: definition.clientName ?? `mcporter (${definition.name})`,
+      client_name: definition.clientName ?? `mcporter-cap (${definition.name})`,
       redirect_uris: [this.redirectUrlValue.toString()],
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],

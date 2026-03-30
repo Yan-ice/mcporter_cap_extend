@@ -92,7 +92,7 @@ export const CONFIG_HELP_ENTRIES: Record<ConfigSubcommand, ConfigHelpEntry> = {
     name: 'login <name|url> [options]',
     summary: 'Run the OAuth/auth flow',
     usage: 'mcporter config login <name|url> [options]',
-    description: 'Delegates to `mcporter auth`, so you can pass ephemeral flags like --http-url/--stdio/--reset.',
+    description: 'Delegates to `mcporter-cap auth`, so you can pass ephemeral flags like --http-url/--stdio/--reset.',
     examples: ['pnpm mcporter config login linear', 'pnpm mcporter config login https://example.com/mcp --reset'],
   },
   logout: {
@@ -187,7 +187,7 @@ function printConfigOverview(colorize: boolean): void {
 
 function printSubcommandHelp(subcommand: ConfigSubcommand, colorize: boolean): void {
   const entry = CONFIG_HELP_ENTRIES[subcommand];
-  const title = colorize ? boldText(`mcporter config ${subcommand}`) : `mcporter config ${subcommand}`;
+  const title = colorize ? boldText(`mcporter-cap config ${subcommand}`) : `mcporter-cap config ${subcommand}`;
   const description = colorize ? dimText(entry.description) : entry.description;
   const usageHeader = colorize ? boldText('Usage') : 'Usage';
   const lines: string[] = [title, description, '', usageHeader, `  ${entry.usage}`];

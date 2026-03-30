@@ -106,7 +106,7 @@ export function printImportSummary(importServers: ServerDefinition[]): void {
     const pathLabel = colorize ? dimText(path) : path;
     console.log(`  ${pathLabel} — ${countLabel} (${sample}${suffix})`);
   }
-  const guidance = 'Use `mcporter config import <kind>` to copy them locally.';
+  const guidance = 'Use `mcporter-cap config import <kind>` to copy them locally.';
   console.log(colorize ? dimText(guidance) : guidance);
 }
 

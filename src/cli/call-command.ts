@@ -161,7 +161,7 @@ function renderCallResult(result: unknown, parsed: CallArgsParseResult): void {
 
 export function printCallHelp(): void {
   const lines = [
-    'Usage: mcporter call <server.tool | url> [arguments] [flags]',
+    'Usage: mcporter-cap call <server.tool | url> [arguments] [flags]',
     '',
     'Selectors:',
     '  server.tool            Use a configured server and tool (e.g., linear.list_issues).',
@@ -196,10 +196,10 @@ export function printCallHelp(): void {
     '  --yes                  Skip confirmation prompts when persisting.',
     '',
     'Examples:',
-    '  mcporter call linear.list_issues team=ENG limit:5',
-    '  mcporter call "linear.create_issue(title: \\"Bug\\", team: \\"ENG\\")"',
-    '  mcporter call https://api.example.com/mcp.fetch url:https://example.com',
-    '  mcporter call --stdio "bun run ./server.ts" scrape url=https://example.com',
+    '  mcporter-cap call linear.list_issues team=ENG limit:5',
+    '  mcporter-cap call "linear.create_issue(title: \\"Bug\\", team: \\"ENG\\")"',
+    '  mcporter-cap call https://api.example.com/mcp.fetch url:https://example.com',
+    '  mcporter-cap call --stdio "bun run ./server.ts" scrape url=https://example.com',
   ];
   console.error(lines.join('\n'));
 }
@@ -441,7 +441,7 @@ function maybeReportConnectionIssue(server: string, tool: string, error: unknown
   const issue = analyzeConnectionError(error);
   const detail = summarizeIssueMessage(issue.rawMessage);
   if (issue.kind === 'auth') {
-    const authCommand = `mcporter auth ${server}`;
+    const authCommand = `mcporter-cap auth ${server}`;
     const hint = `[mcporter] Authorization required for ${server}. Run '${authCommand}'.${detail ? ` (${detail})` : ''}`;
     console.error(yellowText(hint));
     return issue;

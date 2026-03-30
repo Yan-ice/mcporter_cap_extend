@@ -27,7 +27,7 @@ describe('mcporter auth help shortcut', () => {
 
     await runCli(['auth', '--help']);
 
-    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Usage: mcporter auth'));
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Usage: mcporter-cap auth'));
     expect(process.exitCode).toBe(0);
   });
 
@@ -37,7 +37,7 @@ describe('mcporter auth help shortcut', () => {
 
     await runCli(['auth', 'help']);
 
-    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Usage: mcporter auth'));
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Usage: mcporter-cap auth'));
     expect(process.exitCode).toBe(0);
   });
 });

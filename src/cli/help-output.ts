@@ -25,11 +25,11 @@ export function printHelp(message?: string): void {
   const footer = formatHelpFooter(colorize);
   const title = colorize
     ? `${boldText('mcporter')} ${dimText('— Model Context Protocol CLI & generator')}`
-    : 'mcporter — Model Context Protocol CLI & generator';
+    : 'mcporter-cap — Model Context Protocol CLI & generator';
   const lines = [
     title,
     '',
-    'Usage: mcporter <command> [options]',
+    'Usage: mcporter-cap <command> [options]',
     '',
     ...sections,
     '',
@@ -50,17 +50,17 @@ function buildCommandSections(colorize: boolean): string[] {
         {
           name: 'list',
           summary: 'List configured servers (add --schema for tool docs)',
-          usage: 'mcporter list [name] [--schema] [--json]',
+          usage: 'mcporter-cap list [name] [--schema] [--json]',
         },
         {
           name: 'call',
           summary: 'Call a tool by selector (server.tool) or HTTP URL; key=value flags supported',
-          usage: 'mcporter call <selector> [key=value ...]',
+          usage: 'mcporter-cap call <selector> [key=value ...]',
         },
         {
           name: 'auth',
           summary: 'Complete OAuth for a server without listing tools',
-          usage: 'mcporter auth <server | url> [--reset]',
+          usage: 'mcporter-cap auth <server | url> [--reset]',
         },
       ],
     },
@@ -70,17 +70,17 @@ function buildCommandSections(colorize: boolean): string[] {
         {
           name: 'generate-cli',
           summary: 'Emit a standalone CLI (supports HTTP, stdio, and inline commands)',
-          usage: 'mcporter generate-cli --server <name> | --command <ref> [options]',
+          usage: 'mcporter-cap generate-cli --server <name> | --command <ref> [options]',
         },
         {
           name: 'inspect-cli',
           summary: 'Show metadata and regen instructions for a generated CLI',
-          usage: 'mcporter inspect-cli <path> [--json]',
+          usage: 'mcporter-cap inspect-cli <path> [--json]',
         },
         {
           name: 'emit-ts',
           summary: 'Generate TypeScript client/types for a server',
-          usage: 'mcporter emit-ts <server> --mode client|types [options]',
+          usage: 'mcporter-cap emit-ts <server> --mode client|types [options]',
         },
       ],
     },
@@ -90,7 +90,7 @@ function buildCommandSections(colorize: boolean): string[] {
         {
           name: 'config',
           summary: 'Inspect or edit config files (list, get, add, remove, import, login, logout)',
-          usage: 'mcporter config <command> [options]',
+          usage: 'mcporter-cap config <command> [options]',
         },
       ],
     },
@@ -100,7 +100,7 @@ function buildCommandSections(colorize: boolean): string[] {
         {
           name: 'daemon',
           summary: 'Manage the keep-alive daemon (start | status | stop | restart)',
-          usage: 'mcporter daemon <subcommand>',
+          usage: 'mcporter-cap daemon <subcommand>',
         },
       ],
     },
@@ -149,10 +149,10 @@ function formatGlobalFlags(colorize: boolean): string {
 function formatQuickStart(colorize: boolean): string {
   const title = colorize ? boldText('Quick start') : 'Quick start';
   const entries = [
-    ['mcporter list', 'show configured servers'],
-    ['mcporter list linear --schema', 'view Linear tool docs'],
-    ['mcporter call linear.list_issues limit:5', 'invoke a tool with key=value arguments'],
-    ['mcporter generate-cli --command https://host/mcp --compile ./my-cli', 'build a standalone CLI/binary'],
+    ['mcporter-cap list', 'show configured servers'],
+    ['mcporter-cap list linear --schema', 'view Linear tool docs'],
+    ['mcporter-cap call linear.list_issues limit:5', 'invoke a tool with key=value arguments'],
+    ['mcporter-cap generate-cli --command https://host/mcp --compile ./my-cli', 'build a standalone CLI/binary'],
   ];
   const formatted = entries.map(([cmd, note]) => {
     const comment = colorize ? dimText(`# ${note}`) : `# ${note}`;
@@ -162,9 +162,9 @@ function formatQuickStart(colorize: boolean): string {
 }
 
 function formatHelpFooter(colorize: boolean): string {
-  const pointer = 'Run `mcporter <command> --help` for detailed flags.';
+  const pointer = 'Run `mcporter-cap <command> --help` for detailed flags.';
   const autoLoad =
-    'mcporter auto-loads servers from ./config/mcporter.json and editor imports (Cursor, Claude, Codex, etc.).';
+    'mcporter-cap auto-loads servers from ./config/mcporter.json and editor imports (Cursor, Claude, Codex, etc.).';
   if (!colorize) {
     return `${pointer}\n${autoLoad}`;
   }

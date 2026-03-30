@@ -22,12 +22,12 @@ describe('mcporter help shortcuts (hidden)', () => {
   });
 
   const cases: Array<{ args: string[]; expectSnippet: string }> = [
-    { args: ['call', '--help'], expectSnippet: 'Usage: mcporter call' },
-    { args: ['call', 'help'], expectSnippet: 'Usage: mcporter call' },
-    { args: ['auth', '--help'], expectSnippet: 'Usage: mcporter auth' },
-    { args: ['auth', 'help'], expectSnippet: 'Usage: mcporter auth' },
-    { args: ['list', '--help'], expectSnippet: 'Usage: mcporter list' },
-    { args: ['list', 'help'], expectSnippet: 'Usage: mcporter list' },
+    { args: ['call', '--help'], expectSnippet: 'Usage: mcporter-cap call' },
+    { args: ['call', 'help'], expectSnippet: 'Usage: mcporter-cap call' },
+    { args: ['auth', '--help'], expectSnippet: 'Usage: mcporter-cap auth' },
+    { args: ['auth', 'help'], expectSnippet: 'Usage: mcporter-cap auth' },
+    { args: ['list', '--help'], expectSnippet: 'Usage: mcporter-cap list' },
+    { args: ['list', 'help'], expectSnippet: 'Usage: mcporter-cap list' },
   ];
 
   it.each(cases)('prints help for %j', async ({ args, expectSnippet }) => {

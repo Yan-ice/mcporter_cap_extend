@@ -129,7 +129,7 @@ export async function handleList(
 
       if (flags.format === 'text') {
         console.log(
-          `mcporter ${MCPORTER_VERSION} — Listing ${servers.length} server(s) (per-server timeout: ${perServerTimeoutSeconds}s)`
+          `mcporter-cap ${MCPORTER_VERSION} — Listing ${servers.length} server(s) (per-server timeout: ${perServerTimeoutSeconds}s)`
         );
       }
       const spinner =
@@ -354,7 +354,7 @@ export async function handleList(
 
 export function printListHelp(): void {
   const lines = [
-    'Usage: mcporter list [server | url] [flags]',
+    'Usage: mcporter-cap list [server | url] [flags]',
     '',
     'Targets:',
     '  <name>                 Use a server from config/mcporter.json or editor imports.',
@@ -381,10 +381,10 @@ export function printListHelp(): void {
     '  --timeout <ms>         Override the per-server discovery timeout.',
     '',
     'Examples:',
-    '  mcporter list',
-    '  mcporter list linear --schema',
-    '  mcporter list https://mcp.example.com/mcp',
-    '  mcporter list --http-url https://localhost:3333/mcp --schema',
+    '  mcporter-cap list',
+    '  mcporter-cap list linear --schema',
+    '  mcporter-cap list https://mcp.example.com/mcp',
+    '  mcporter-cap list --http-url https://localhost:3333/mcp --schema',
   ];
   console.error(lines.join('\n'));
 }

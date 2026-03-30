@@ -79,7 +79,7 @@ function parseInspectFlags(args: string[]): InspectFlags {
   }
   const artifactPath = args.shift();
   if (!artifactPath) {
-    throw new Error('Usage: mcporter inspect-cli <artifact> [--json]');
+    throw new Error('Usage: mcporter-cap inspect-cli <artifact> [--json]');
   }
   return { artifactPath, format };
 }

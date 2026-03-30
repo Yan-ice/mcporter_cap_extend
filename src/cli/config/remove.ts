@@ -6,7 +6,7 @@ import type { ConfigCliOptions } from './types.js';
 export async function handleRemoveCommand(options: ConfigCliOptions, args: string[]): Promise<void> {
   const name = args.shift();
   if (!name) {
-    throw new CliUsageError('Usage: mcporter config remove <name>');
+    throw new CliUsageError('Usage: mcporter-cap config remove <name>');
   }
   const { config, path: configPath } = await loadOrCreateConfig(options.loadOptions);
   const targetName = findServerNameWithFuzzyMatch(name, Object.keys(config.mcpServers ?? {}));

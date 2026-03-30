@@ -12,7 +12,7 @@ const quietReporterOptions = quietReporterEnabled
 export default defineConfig({
   test: {
     // Quiet mode hides console output for passing tests so CLI fixture logs
-    // (e.g., the full `mcporter list` banners) don't overwhelm the reporter.
+    // (e.g., the full `mcporter-cap list` banners) don't overwhelm the reporter.
     ...quietReporterOptions,
   },
 });

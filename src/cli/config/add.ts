@@ -30,7 +30,7 @@ export type AddFlags = {
 export async function handleAddCommand(options: ConfigCliOptions, args: string[]): Promise<void> {
   const name = args.shift();
   if (!name) {
-    throw new CliUsageError('Usage: mcporter config add <name> [target]');
+    throw new CliUsageError('Usage: mcporter-cap config add <name> [target]');
   }
   let positionalTarget: string | undefined;
   if (args[0] && !args[0].startsWith('--')) {

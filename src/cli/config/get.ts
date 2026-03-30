@@ -8,7 +8,7 @@ export async function handleGetCommand(options: ConfigCliOptions, args: string[]
   const flags = extractGetFlags(args);
   const name = args.shift();
   if (!name) {
-    throw new CliUsageError('Usage: mcporter config get <name>');
+    throw new CliUsageError('Usage: mcporter-cap config get <name>');
   }
   const servers = await loadServerDefinitions(options.loadOptions);
   const target = resolveServerDefinition(name, servers);

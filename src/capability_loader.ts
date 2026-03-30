@@ -114,19 +114,19 @@ export function read_capability(capabilityRequired: string): unknown {
  *
  * @param capabilityRequired - The capability ID (UUID) to generate request from.
  * @param paramText - The request parameter text to sign.
- * @returns The generated request JSON object, or undefined if generation failed.
+ * @returns The generated request JSON object.
+ * @throws {Error} When capability is not found or request generation fails.
  */
 export function generateCapabilityRequest(capabilityRequired: string, paramText: string): unknown {
   // First read the capability
   const capability = read_capability(capabilityRequired);
   if (!capability) {
-    return undefined;
+    throw new Error(`Capability not found: required capability with sid "${capabilityRequired}" does not exist.`);
   }
 
   const capCliPath = getCapCliPath();
   if (!existsSync(capCliPath)) {
-    logger.warn(`cap-cli not found at "${capCliPath}". Set ${MCPORTER_CAP_CLI_PATH} environment variable to override.`);
-    return undefined;
+    throw new Error(`cap-cli not found. Set ${MCPORTER_CAP_CLI_PATH} environment variable to override.`);
   }
 
   // Create temp directory for working files
@@ -151,15 +151,16 @@ export function generateCapabilityRequest(capabilityRequired: string, paramText:
 
     // Read back the generated request
     if (!existsSync(requestFilePath)) {
-      logger.warn(`cap-cli did not generate request file at "${requestFilePath}"`);
-      return undefined;
+      throw new Error(`cap-cli did not generate request file at "${requestFilePath}"`);
     }
 
     const requestContent = readFileSync(requestFilePath, 'utf8');
     return JSON.parse(requestContent);
   } catch (error) {
-    logger.warn(`Failed to generate capability request: ${(error as Error).message}`);
-    return undefined;
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(`Failed to generate capability request: ${String(error)}`);
   } finally {
     // Cleanup temp files
     try {

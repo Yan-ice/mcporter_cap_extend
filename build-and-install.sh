@@ -37,8 +37,6 @@ $BUN_CMD install
 
 # Build
 echo "Building with bun..."
-$BUN_CMD build "$MCPORTER_SRC" --compile --minify --outfile "$OUTPUT_FILE"
-
 
 $BUN_CMD build "$MCPORTER_SRC" --compile --minify --outfile "$OUTPUT_FILE"
 

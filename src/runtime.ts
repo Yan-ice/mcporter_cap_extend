@@ -174,20 +174,19 @@ class McpRuntime implements Runtime {
       do {
         const response = await context.client.listTools(cursor ? { cursor } : undefined);
         tools.push(
-          ...(response.tools ?? []).map((tool) => ({
+          ...(response.tools ?? []).map((tool) => (
+            {
             name: tool.name,
             description: tool.description ?? undefined,
             inputSchema: options.includeSchema ? tool.inputSchema : undefined,
             outputSchema: options.includeSchema ? tool.outputSchema : undefined,
             capabilityRequired:
-              tool.annotations && 'capability_required' in tool.annotations
-                ? (tool.annotations.capability_required as string)
-                : undefined,
-          }))
+              tool._meta && tool._meta.capabilityRequired ? tool._meta.capabilityRequired as string : undefined,
+            }
+          ))
         );
         cursor = response.nextCursor ?? undefined;
       } while (cursor);
-
       // Cache the result for future use
       this.toolCache.set(normalizedServer, tools);
       return tools;
@@ -220,13 +219,11 @@ class McpRuntime implements Runtime {
       const toolInfo = tools.find(t => t.name === toolName);
 
       if (toolInfo?.capabilityRequired !== undefined) {
-        // Use server/toolName as the parameter text to sign
-        const paramText = `${normalizedServer}/${toolName}`;
+        // Temp: Use toolcall-{toolName} as the parameter text to sign
+        const paramText = `toolcall-${toolName}`;
         const capabilityRequest = generateCapabilityRequest(toolInfo.capabilityRequired, paramText);
-        // Inject the generated request to args if successful
-        if (capabilityRequest !== undefined) {
-          args.capability = capabilityRequest;
-        }
+        // Inject the generated request to args
+        args.capability = capabilityRequest;
       }
 
       const params: CallToolRequest['params'] = {

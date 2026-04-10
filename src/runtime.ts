@@ -4,7 +4,8 @@ import type { CallToolRequest, ListResourcesRequest } from '@modelcontextprotoco
 import { loadServerDefinitions, type ServerDefinition } from './config.js';
 import { createPrefixedConsoleLogger, type Logger, type LogLevel, resolveLogLevelFromEnv } from './logging.js';
 import { closeTransportAndWait } from './runtime-process-utils.js';
-import { read_capability, generateCapabilityRequest } from './capability_loader.js';
+import { serializeCapabilityParamText } from './capability-param-text.js';
+import { generateCapabilityRequest } from './capability_loader.js';
 import './sdk-patches.js';
 import { shouldResetConnection } from './runtime/errors.js';
 import { resolveOAuthTimeoutFromEnv } from './runtime/oauth.js';
@@ -216,13 +217,18 @@ class McpRuntime implements Runtime {
       if (!tools) {
         tools = await this.listTools(server);
       }
-      const toolInfo = tools.find(t => t.name === toolName);
+      let toolInfo = tools.find((t) => t.name === toolName);
 
       if (toolInfo?.capabilityRequired !== undefined) {
-        // Temp: Use toolcall-{toolName} as the parameter text to sign
-        const paramText = `toolcall-${toolName}`;
+        if (!toolInfo.inputSchema) {
+          tools = await this.listTools(server, { includeSchema: true });
+          toolInfo = tools.find((t) => t.name === toolName);
+        }
+        if (!toolInfo?.inputSchema || !toolInfo.capabilityRequired) {
+          throw new Error(`Tool '${toolName}' requires a capability but inputSchema or capability metadata is missing.`);
+        }
+        const paramText = serializeCapabilityParamText(args, toolInfo.inputSchema);
         const capabilityRequest = generateCapabilityRequest(toolInfo.capabilityRequired, paramText);
-        // Inject the generated request to args
         args.capability = capabilityRequest;
       }
 

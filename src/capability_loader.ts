@@ -23,7 +23,7 @@ const MCPORTER_CAP_CLI_PATH = 'MCPORTER_CAP_CLI_PATH';
 /**
  * Cache for loaded capabilities to avoid repeated disk reads.
  */
-const capabilityCache = new Map<string, unknown>();
+const capabilityCache = new Map<string, string | undefined>();
 
 /**
  * Get the capabilities directory from environment or use default.
@@ -58,7 +58,7 @@ export function getCapCliPath(): string {
  * @param capabilityRequired - The capability ID (UUID) to load.
  * @returns The loaded capability JSON object, or undefined if not found.
  */
-export function read_capability(capabilityRequired: string): unknown {
+export function findCapabilityPath(capabilityRequired: string): string | undefined {
   // Check cache first
   if (capabilityCache.has(capabilityRequired)) {
     return capabilityCache.get(capabilityRequired);
@@ -76,7 +76,7 @@ export function read_capability(capabilityRequired: string): unknown {
     const files = readdirSync(capabilitiesDir, { withFileTypes: true });
 
     for (const file of files) {
-      if (!file.isFile() || !file.name.endsWith('.json')) {
+      if (!file.isFile() || !file.name.endsWith('.cap')) {
         continue;
       }
 
@@ -88,7 +88,7 @@ export function read_capability(capabilityRequired: string): unknown {
         // Check if this capability matches by sid
         if (json && typeof json === 'object' && 'sid' in json && json.sid === capabilityRequired) {
           capabilityCache.set(capabilityRequired, json);
-          return json;
+          return filePath;
         }
       } catch (error) {
         // Skip invalid JSON files
@@ -119,15 +119,12 @@ export function read_capability(capabilityRequired: string): unknown {
  */
 export function generateCapabilityRequest(capabilityRequired: string, paramText: string): unknown {
   // First read the capability
-  const capability = read_capability(capabilityRequired);
-  if (!capability) {
+  const capability_path = findCapabilityPath(capabilityRequired);
+  if (!capability_path) {
     throw new Error(`Capability not found: required capability with sid "${capabilityRequired}" does not exist.`);
   }
 
   const capCliPath = getCapCliPath();
-  if (!existsSync(capCliPath)) {
-    throw new Error(`cap-cli not found. Set ${MCPORTER_CAP_CLI_PATH} environment variable to override.`);
-  }
 
   // Create temp directory for working files
   const tempDir = mkdtempSync(join(os.tmpdir(), 'mcporter-cap-'));
@@ -135,13 +132,11 @@ export function generateCapabilityRequest(capabilityRequired: string, paramText:
   const requestFilePath = join(tempDir, `${capabilityRequired}.request`);
 
   try {
-    // Write capability to temp file
-    writeFileSync(capFilePath, JSON.stringify(capability), 'utf8');
 
     // Call cap-cli request command
     execFileSync(capCliPath, [
       'request',
-      '-f', capFilePath,
+      '-f', capability_path,
       '-p', paramText,
       '-o', requestFilePath,
       '--silence'

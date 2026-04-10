@@ -228,6 +228,7 @@ class McpRuntime implements Runtime {
           throw new Error(`Tool '${toolName}' requires a capability but inputSchema or capability metadata is missing.`);
         }
         const paramText = serializeCapabilityParamText(args, toolInfo.inputSchema);
+        console.log('paramText', paramText);
         const capabilityRequest = generateCapabilityRequest(toolInfo.capabilityRequired, paramText);
         args.capability = capabilityRequest;
       }

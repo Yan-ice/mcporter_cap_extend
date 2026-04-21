@@ -85,5 +85,5 @@ echo "  mcporter-cap list"
 echo "  mcporter-cap call <server.tool> param:value"
 echo
 echo "Remember to setup these environment variable:"
-echo "MCPORTER_CAPABILITIES_DIR (default = ~/.mcporter/capabilities)"
+echo "MCPORTER_CAPABILITIES_DIR (default = ~/.agent_capability)"
 echo "MCPORTER_CAP_CLI_PATH (default = cap-cli)"

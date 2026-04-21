@@ -33,7 +33,7 @@ function getCapabilitiesDir(): string {
   if (dir) {
     return expandHome(dir.trim());
   }
-  return expandHome('~/.agent_capability/');
+  return expandHome('~/.agent_capability');
 }
 
 /**

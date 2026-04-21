@@ -3,7 +3,6 @@ import { join } from 'node:path';
 import os from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { createPrefixedConsoleLogger } from './logging.js';
-import { resolveBaseDir } from './daemon/paths.js';
 import { expandHome } from './env.js';
 
 const logger = createPrefixedConsoleLogger('capability-loader', 'warn');
@@ -27,15 +26,14 @@ const capabilityCache = new Map<string, string | undefined>();
 
 /**
  * Get the capabilities directory from environment or use default.
- * Defaults to <base_dir>/capabilities where base_dir is ~/.mcporter
- * (or MCPORTER_DAEMON_DIR if set).
+ * Defaults to ~/.agent_capability/.
  */
 function getCapabilitiesDir(): string {
   const dir = process.env[MCPORTER_CAPABILITIES_DIR];
   if (dir) {
     return expandHome(dir.trim());
   }
-  return join(resolveBaseDir(), 'capabilities');
+  return expandHome('~/.agent_capability/');
 }
 
 /**
